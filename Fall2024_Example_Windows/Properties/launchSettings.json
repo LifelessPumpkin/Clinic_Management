@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Fall2024_Example_Windows": {
+      "commandName": "Project"
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    }
+  }
+}

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="App.Clinic.Views.AppointmentManagement"
+             Title="AppointmentManagement"
+             NavigatedTo="AppointmentManagement_NavigatedTo">
+    <VerticalStackLayout>
+        <Picker
+            ItemsSource ="{Binding Patients}"
+            SelectedItem ="{Binding SelectedPatient}"
+            PropertyChanged="RefreshClicked"/>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition 
+                    Width ="12*"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+        </Grid>
+        <ListView
+            ItemsSource="{Binding Appointments}"
+            SelectedItem="{Binding SelectedAppointment}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition 
+                                    Width="1.5*"/>
+                                <ColumnDefinition 
+                                    Width="2*"/>
+                                <ColumnDefinition 
+                                    Width="2*"/>
+                                <ColumnDefinition 
+                                    Width="2*"/>
+                                <ColumnDefinition 
+                                    Width="2*"/>
+                                <ColumnDefinition 
+                                    Width="2*"/>
+                                <ColumnDefinition 
+                                    Width="2*"/>
+                                <ColumnDefinition 
+                                    Width="2*"/>
+                                <ColumnDefinition 
+                                    Width="2*"/>
+                                <ColumnDefinition
+                                    Width="2*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label 
+                                Grid.Column="0" 
+                                Text="Patient ID:"/>
+                            <Label 
+                                Grid.Column="1" 
+                                Text="{Binding PatId}"/>
+                            <Label 
+                                Grid.Column="2" 
+                                Text="Physician Last Name:"/>
+                            <Label 
+                                Grid.Column="3" 
+                                Text="{Binding PhysLName}"/>
+                            <Label 
+                                Grid.Column="4" 
+                                Text="Date:"/>
+                            <Label 
+                                Grid.Column="5" 
+                                Text="{Binding DisplayStartDate}"/>
+                            <Label 
+                                Grid.Column="6" 
+                                Text="Time:"/>
+                            <Label
+                                Grid.Column="7"
+                                Text="{Binding StartHour}"/>
+                            <Label
+                                Grid.Column="8"
+                                Text="Price of Visit:"/>
+                            <Label
+                                Grid.Column="9"
+                                Text="{Binding PostInsurancePrice}"/>
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Button
+            Text="Create Appointment"
+            Clicked="AddClicked"
+            />
+        <Button
+            Text="Change Appointment"
+            Clicked="EditClicked"/>
+        <Button
+            Text="Edit Appointment Details"
+            Clicked="AppointmentDetailsClicked"/>
+        <Button
+            Text="Cancel"
+            Clicked="CancelClicked"
+            />
+        <Button
+            Text ="Delete Appointment"
+            Clicked="DeleteClicked"/>
+    </VerticalStackLayout>
+</ContentPage>

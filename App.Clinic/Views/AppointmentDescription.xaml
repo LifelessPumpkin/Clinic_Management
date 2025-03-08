@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="App.Clinic.Views.AppointmentDescription"
+             Title="AppointmentDescription"
+             NavigatedTo="AppointmentDescription_NavigatedTo">
+    <VerticalStackLayout>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <Label 
+                Text="Total:"
+                Grid.Column="0"
+                Grid.Row="0"/>
+            <Label
+                Text="{Binding PostInsurancePrice}"
+                Grid.Column="1"
+                Grid.Row="0"/>
+            <Label
+                Text="Price Before Insurance:"
+                Grid.Column="0"
+                Grid.Row="1"/>
+            <Label
+                Text="{Binding PreInsurancePrice}"
+                Grid.Column="1"
+                Grid.Row="1"/>
+        </Grid>
+        <Label 
+            Text="Insurance Plan:"/>
+        <Label
+            Text="{Binding InsPlan}"
+            FontSize="20"/>
+        <Label
+            Text="Add Treatment:"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition 
+                    Width="4*"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Picker
+                ItemsSource="{Binding AvailableTreatments}"
+                SelectedItem="{Binding SelectedTreatment}"
+                Grid.Column="0"/>
+            <Button
+                Text="Add Treatment"
+                Command="{Binding AddTreatmentCommand}"
+                Grid.Column="1"/>
+        </Grid>
+        <ListView
+            ItemsSource="{Binding TreatmentsCompleted}"
+            HeightRequest="150"
+            HasUnevenRows="False">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout 
+                            Orientation="Horizontal">
+                            <Label 
+                                Text="{Binding TreatmentName}"
+                                Margin="5"/>
+                            <Label
+                                Text="{Binding TreatmentPrice}"
+                                Margin="5"/>
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Button
+            Text="Go Back"
+            Clicked="CancelClicked"/>
+    </VerticalStackLayout>
+</ContentPage>
