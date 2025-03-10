@@ -21,6 +21,7 @@ public partial class AppointmentDescription : ContentPage
 
     private void CancelClicked(object sender, EventArgs e)
     {
+        // Go back to Appointment Page
         Shell.Current.GoToAsync("//Appointments");
     }
 

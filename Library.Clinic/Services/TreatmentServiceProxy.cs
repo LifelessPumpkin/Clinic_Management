@@ -11,7 +11,9 @@ namespace Library.Clinic.Services
     public class TreatmentServiceProxy
     {
         public List<Treatment> Treatments { get; private set; } = [];
+        // Not connected to persistence or DTO yet
 
+        // Help with multithreading, not a perfect implementation but its functioning
         private static object _lock = new object();
 
         public static TreatmentServiceProxy Current
@@ -20,6 +22,7 @@ namespace Library.Clinic.Services
             {
                 lock (_lock)
                 {
+                    // If theres already an instance we don't need a new one
                     if (instance == null)
                     {
                         instance = new TreatmentServiceProxy();
@@ -35,6 +38,7 @@ namespace Library.Clinic.Services
         private TreatmentServiceProxy()
         {
             instance = null;
+            // Initialize a list of example treatments
             Treatments = new List<Treatment>
             {
                 new Treatment
@@ -103,6 +107,7 @@ namespace Library.Clinic.Services
 
         public int LastTKey
         {
+            // Basic function to increment keys
             get
             {
                 if (Treatments.Any())
@@ -116,6 +121,7 @@ namespace Library.Clinic.Services
         public void CreateOrUpdateTreatment(Treatment T)
         {
             bool isAdd = false;
+            // If there is not an ID, create a new treatment
             if (T.TreatmentId <= 0)
             {
                 T.TreatmentId = LastTKey + 1;
@@ -129,6 +135,7 @@ namespace Library.Clinic.Services
 
         public void DeleteTreatment(int Id)
         {
+            // Delete treatment
             var treatmenttoremove = Treatments.FirstOrDefault(t => t.TreatmentId == Id);
             if(treatmenttoremove!=null)Treatments.Remove(treatmenttoremove);
         }

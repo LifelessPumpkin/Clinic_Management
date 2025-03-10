@@ -15,16 +15,20 @@ public partial class TreatmentView : ContentPage
 
     private void CancelClicked(object sender, EventArgs e)
     {
+        // Go back to Treatments page
         Shell.Current.GoToAsync("//Treatments");
     }
 
     private void AddClicked(object sender, EventArgs e)
     {
+        // Add the patient 
         (BindingContext as TreatmentViewModel)?.ExecuteAdd();
     }
 
     private void TreatmentView_NavigatedTo(object sender, NavigatedToEventArgs e)
     {
+        // This is all just setting binding context so its okay to leave in 
+        // If the treatment exists set the binding context equal to the treatment
         if (TreatmentId > 0)
         {
             var model = TreatmentServiceProxy.Current
@@ -35,6 +39,7 @@ public partial class TreatmentView : ContentPage
             }
             else BindingContext = new TreatmentViewModel();
         }
+        // the 
         else
         {
             BindingContext = new TreatmentViewModel();

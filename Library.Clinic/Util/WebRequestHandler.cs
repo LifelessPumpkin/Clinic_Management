@@ -30,7 +30,7 @@ namespace PP.Library.Utilities
                 }
             } catch(Exception e)
             {
-
+                // should probably have a console writeline here
             }
 
 
@@ -61,7 +61,7 @@ namespace PP.Library.Utilities
             }
             catch (Exception e)
             {
-
+                // should probably have a console writeline here
             }
 
 

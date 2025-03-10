@@ -10,16 +10,20 @@ public class PatientServiceProxy
 
     public List<PatientDTO> Patients { get; private set; } = [];
     public List<InsurancePlan> InsurancePlans { get; private set; } = [];
+    // Available hours to set an appointment
     public List<int> HourRange { get; private set; } = [9, 10, 11, 12, 1, 2, 3, 4, 5];
-
+    
+    // Help with multithreading
     private static object _lock = new object();
 
+    //Singleton
     public static PatientServiceProxy Current
     {
         get
         {
             lock (_lock)
             {
+                // If theres already an instance we don't need a new one
                 if (instance == null)
                 {
                     instance = new PatientServiceProxy();
@@ -35,6 +39,7 @@ public class PatientServiceProxy
     private PatientServiceProxy()
     {
         instance = null;
+        // Insurance might deserve its own model, DTO, and service proxy
         InsurancePlans = new List<InsurancePlan>
         {
             //Economy Plan – 15% Coverage - $95
@@ -73,12 +78,15 @@ public class PatientServiceProxy
                 premium = 1000
             }
         };
+        // Get Web Request to fetch all the patients from API
         var patientsData = new WebRequestHandler().Get("/Patient").Result;
+        // Deserialize the list
         Patients = JsonConvert.DeserializeObject<List<PatientDTO>>(patientsData) ?? new List<PatientDTO>();
     }
 
     public int LastKey
     {
+        // Basic function to increment keys
         get
         {
             if (Patients.Any())
@@ -94,43 +102,61 @@ public class PatientServiceProxy
     //--------------------Patient--------------------\\
     public async Task<PatientDTO?> AddOrUpdatePatient(PatientDTO patient)
     {
-        var payload = await new WebRequestHandler().Post("/Patient", patient); // here
+        // New HTTP POST
+        var payload = await new WebRequestHandler().Post("/Patient", patient); 
+
+        // Deserialize it
         var newPatient = JsonConvert.DeserializeObject<PatientDTO>(payload);
+
+        // Fetch and increment last used ID 
+        // DONT DELETE THIS , IT WILL CAUSE BREAKS
         newPatient.Id = LastKey + 1;
-        if (newPatient != null && newPatient.Id > 0 && patient.Id == 0) // should be new patient.id >0, but there is an error so this is temp fix
+        
+        // New patient to be added to the list
+        if (newPatient != null && newPatient.Id > 0 && patient.Id == 0) 
         {
-            //new patient to be added to the list
             Patients.Add(newPatient);
         }
+        
+        // Edit, exchange the object in the list
         else if (newPatient != null && patient != null && patient.Id > 0 && patient.Id == newPatient.Id)
         {
-            //edit, exchange the object in the list
+            // Find the patient in the list
             var currentPatient = Patients.FirstOrDefault(p => p.Id == newPatient.Id);
             var index = Patients.Count;
             if (currentPatient != null)
             {
+                // Remove the patient
                 index = Patients.IndexOf(currentPatient);
                 Patients.RemoveAt(index);
             }
+            // Insert again
             Patients.Insert(index, newPatient);
         }
 
         return newPatient;
     }
+
+    
     public async Task<List<PatientDTO>> RetrievePatients()
     {
+        // New HTTP GET
         var patientsPayload = await new WebRequestHandler().Get("/Patient");
 
+        // Deserialize objects
         Patients = JsonConvert.DeserializeObject<List<PatientDTO>>(patientsPayload)
             ?? new List<PatientDTO>();
 
         return Patients;
     }
+
     public async Task<List<PatientDTO>> Search(string query)
     {
+        // New HTTP Post with search query
         var patientsPayload = await new WebRequestHandler()
                 .Post("/Patient/Search", new Query(query));
 
+        // Deserialize object
         Patients = JsonConvert.DeserializeObject<List<PatientDTO>>(patientsPayload)
             ?? new List<PatientDTO>();
 
@@ -138,37 +164,42 @@ public class PatientServiceProxy
     }
     public async void DeletePatient(int id)
     {
+        // Find the patient to be deleted
         var patientToRemove = Patients.FirstOrDefault(p => p.Id == id);
 
         if (patientToRemove != null)
         {
+            // Remove from cache
             Patients.Remove(patientToRemove);
 
+            // New HTTP DELETE
             await new WebRequestHandler().Delete($"/Patient/{id}");
         }
     }
 
-    //public void AddDiagnosis(int id)
-    //{
-    //    var patientdiagnosis = Patients.FirstOrDefault(p => p.Id == id);
-    //    if (patientdiagnosis != null)
-    //    {
-    //        Console.WriteLine("Please enter the diagnosis - ");
-    //        var ailment = Console.ReadLine() ?? string.Empty;
-    //        patientdiagnosis.Diagnoses.Add(ailment);
-    //    }
-    //}
+    // NEED TO ADD API FUNCTIONALITY
+    /*public void AddDiagnosis(int id)
+    {
+       var patientdiagnosis = Patients.FirstOrDefault(p => p.Id == id);
+       if (patientdiagnosis != null)
+       {
+           Console.WriteLine("Please enter the diagnosis - ");
+           var ailment = Console.ReadLine() ?? string.Empty;
+           patientdiagnosis.Diagnoses.Add(ailment);
+       }
+    }*/
 
-    //public void AddPrescription(int id)
-    //{
-    //    var patientprescription = Patients.FirstOrDefault(p => p.Id == id);
-    //    if (patientprescription != null)
-    //    {
-    //        Console.WriteLine("Please enter the Prescription - ");
-    //        var ailment = Console.ReadLine() ?? string.Empty;
-    //        patientprescription.Prescriptions.Add(ailment);
-    //    }
-    //    else Console.WriteLine("Patient was not found");
-    //}
+    // NEED TO ADD API FUNCTIONALITY
+    /*public void AddPrescription(int id)
+    {
+       var patientprescription = Patients.FirstOrDefault(p => p.Id == id);
+       if (patientprescription != null)
+       {
+           Console.WriteLine("Please enter the Prescription - ");
+           var ailment = Console.ReadLine() ?? string.Empty;
+           patientprescription.Prescriptions.Add(ailment);
+       }
+       else Console.WriteLine("Patient was not found");
+    }*/
 
 }
