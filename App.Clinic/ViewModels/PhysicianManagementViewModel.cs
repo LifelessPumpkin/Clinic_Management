@@ -15,10 +15,12 @@ namespace App.Clinic.ViewModels
     {
         public PhysicianManagementViewModel()
         {
+            // Needs to be an observable collection
             Physicians = new ObservableCollection<PhysicianViewModel>();
         }
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        // Enables properties to be refreshed
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -33,6 +35,7 @@ namespace App.Clinic.ViewModels
             {
                 return new ObservableCollection<PhysicianViewModel>
                 (
+                    // Calls physican service proxy to get all the physicians
                     PhysicianServiceProxy
                     .Current
                     .Physicians
@@ -50,6 +53,7 @@ namespace App.Clinic.ViewModels
             {
                 return;
             }
+            // Call service proxy to delete physician
             PhysicianServiceProxy.Current.DeletePhysician(SelectedPhysician.EID);
             Refresh();
         }

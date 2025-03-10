@@ -83,13 +83,17 @@ namespace App.Clinic.ViewModels
 
         public void SetUpCommands()
         {
+            // Commands to attach to the treatments in the management page
             DeleteCommand = new Command(DoDelete);
             EditCommand = new Command((t) => DoEdit(t as TreatmentViewModel));
         }
 
         private void DoDelete()
         {
+            // Call treatment service proxy to delete the treatment
             if (Id > 0) TreatmentServiceProxy.Current.DeleteTreatment(Id);
+            
+            // Go back to management page
             Shell.Current.GoToAsync("//Treatments");
         }
 
@@ -97,6 +101,7 @@ namespace App.Clinic.ViewModels
         {
             if (tvm == null) return;
             var selectedTreatmentId = tvm?.Id ?? 0;
+            // Go to the selected treatment page
             Shell.Current.GoToAsync($"//TreatmentDetails?treatmentId={selectedTreatmentId}");
         }
 
@@ -104,11 +109,13 @@ namespace App.Clinic.ViewModels
         {
             if (model != null)
             {
+                // Call the service proxy to add the treatment
                 TreatmentServiceProxy
                 .Current
                 .CreateOrUpdateTreatment(model);
             }
 
+            // Go back to the management page
             Shell.Current.GoToAsync("//Treatments");
         }
     }

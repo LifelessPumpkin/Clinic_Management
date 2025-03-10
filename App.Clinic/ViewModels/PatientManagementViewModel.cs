@@ -15,8 +15,11 @@ namespace App.Clinic.ViewModels
     {
         public PatientManagementViewModel()
         {
+            // Needs to be an observable collection
             Patients = new ObservableCollection<PatientViewModel>();
         }
+
+        // Enables properties to be refreshed
         public event PropertyChangedEventHandler? PropertyChanged;
 
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
@@ -30,13 +33,13 @@ namespace App.Clinic.ViewModels
         {
             get
             {
+                // Calls service proxy to get all the patients
                 var retval = new ObservableCollection<PatientViewModel>(PatientServiceProxy
                     .Current
                     .Patients
                     .Where(p => p != null)
                     .Where(p=>p.Name.ToUpper().Contains(Query?.ToUpper() ?? string.Empty))
                     .Select(p=>new PatientViewModel(p)));
-                //var som = new ob
                 return retval;
             }
             set{}
@@ -48,6 +51,7 @@ namespace App.Clinic.ViewModels
             {
                 return;
             }
+            // Call service proxy to delete physician
             PatientServiceProxy.Current.DeletePatient(SelectedPatient.Id);
             Refresh();
         }

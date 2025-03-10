@@ -183,9 +183,11 @@ public class AppointmentViewModel : INotifyPropertyChanged
     //        }
     //    }
     //}
+
     public ObservableCollection<int> AppointmentHourRange { 
         get
         {
+            // Gets the hours from patientserviceproxy, I could probably do that here instead
             return new ObservableCollection<int>(PatientServiceProxy.Current.HourRange);
         }
     }
@@ -194,6 +196,7 @@ public class AppointmentViewModel : INotifyPropertyChanged
         {
             var retval = new ObservableCollection<PatientDTO>
             (
+                // Call service proxy to get all the patients
                 PatientServiceProxy
                 .Current
                 .Patients
@@ -208,6 +211,7 @@ public class AppointmentViewModel : INotifyPropertyChanged
         {
             var retval = new ObservableCollection<PhysicianDTO>
             (
+                // Call the service proxy to get all the physicians
                 PhysicianServiceProxy
                 .Current
                 .Physicians
@@ -223,7 +227,11 @@ public class AppointmentViewModel : INotifyPropertyChanged
         {
             var retval = new ObservableCollection<Treatment>
                 (
-                    TreatmentServiceProxy.Current.Treatments.Where(p => p != null)
+                    // Call the service proxy to get all the treatments
+                    TreatmentServiceProxy
+                    .Current
+                    .Treatments
+                    .Where(p => p != null)
                 );
             return retval;
         }
@@ -232,7 +240,7 @@ public class AppointmentViewModel : INotifyPropertyChanged
     {
         get
         {
-
+            // Shows the Treatments that were completed in the appointment
             var retval = new ObservableCollection<Treatment>(
             model?.TreatmentsPerformed?.Where(t => t != null) ?? Enumerable.Empty<Treatment>());
             return retval;
@@ -259,33 +267,47 @@ public class AppointmentViewModel : INotifyPropertyChanged
         model = new Appointment();
         SetUpCommands();
     }
+    
+
     public event PropertyChangedEventHandler? PropertyChanged;
+
     private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+
     public AppointmentViewModel(Appointment? _model)
     {
         model = _model;
         SetUpCommands();
     }
+
     public void SetUpCommands()
-    {
+    { 
+        // Commands to attach to the appointments
         DeleteCommand = new Command(DoDelete);
         EditCommand = new Command((p)=> DoEdit(p as AppointmentViewModel));
         AddTreatmentCommand = new Command(DoTreatmentAdd);
     }
     private void DoDelete()
     {
+        // Call service proxy to delete the appointment
         if(AppId > 0) AppointmentServiceProxy.Current.DeleteAppointment(AppId);
+
+        // Go back to appointment management page
         Shell.Current.GoToAsync("//Appointments");
     }
     private void DoTreatmentAdd()
     {
         if (model != null && SelectedTreatment != null)
         {
+            // Add the treatment to the treatments performed
             model.TreatmentsPerformed.Add(SelectedTreatment);
+
+            // Add the price of the treatment to the current appointment price
             model.AppointmentPrice += SelectedTreatment.TreatmentPrice;
+            
+            // Calculate after insurance and add
             model.AppointmentPriceAfterInsurance += (SelectedTreatment.TreatmentPrice * (1 - model.patient.InsurancePlan.Coverage));
             Refresh();
         }
@@ -294,37 +316,47 @@ public class AppointmentViewModel : INotifyPropertyChanged
     {
         if(avm == null) return;
         var selectedappointmentid = avm?.AppId ?? 0;
+        // Go to the appointment details of the selected appointment
         Shell.Current.GoToAsync($"//AppointmentDetails?appointmentid={selectedappointmentid}");
     }
     public void ExecuteAdd()
     {
         if (model!=null)
         {
+            // Create a new appointment with the theoretical appointment time
             var tempApt = new Appointment
             {
                 physician = tempphysician ?? model.physician,
                 Hour = temphour != 0 ? temphour : model.Hour,
                 StartTime = tempstartdate != DateTime.MinValue ? tempstartdate : model.StartTime
             };
+
+            // Check the validity of the appointment with the theoretical appointment
             if(AppointmentServiceProxy.Current.ValidateAppointment(tempApt))
             {
+                // since it is valid, update the appointment to the real details
                 model.physician = tempApt.physician;
                 model.Hour = tempApt.Hour;
                 model.StartTime = tempApt.StartTime;
 
+                // Call the service proxy to create the appointment
                 AppointmentServiceProxy
                 .Current
                 .CreateOrUpdateAppointment(model);
+
+                // Go back to appointment management
                 Shell.Current.GoToAsync("//Appointments"); 
             }
             else
             {
+                // Not a valid appointment time, displays an error
                 Shell.Current.DisplayAlert("Error", "Choose a different time or physician.", "OK");
             }
         }
     }
     public void Refresh()
     {
+        // Refreshes all these properties whenever a new treatment is added
         NotifyPropertyChanged(nameof(TreatmentsCompleted));
         NotifyPropertyChanged(nameof(PreInsurancePrice));
         NotifyPropertyChanged(nameof(PostInsurancePrice));

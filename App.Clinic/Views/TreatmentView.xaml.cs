@@ -39,9 +39,9 @@ public partial class TreatmentView : ContentPage
             }
             else BindingContext = new TreatmentViewModel();
         }
-        // the 
         else
         {
+            // The binding context is set to default
             BindingContext = new TreatmentViewModel();
         }
 

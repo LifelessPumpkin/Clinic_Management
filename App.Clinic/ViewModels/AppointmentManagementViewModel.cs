@@ -16,6 +16,7 @@ public class AppointmentManagementViewModel: INotifyPropertyChanged
 {
     public AppointmentManagementViewModel()
     {
+        // Needs to be an observable collection
         Appointments = new ObservableCollection<AppointmentViewModel>();
     }
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -33,6 +34,7 @@ public class AppointmentManagementViewModel: INotifyPropertyChanged
             {
                 var retval = new ObservableCollection<AppointmentViewModel>
                 (
+                    // Gets all the appointments from the service proxy
                     AppointmentServiceProxy
                     .Current
                     .Appointments
@@ -51,6 +53,7 @@ public class AppointmentManagementViewModel: INotifyPropertyChanged
         {
             var retval = new ObservableCollection<PatientDTO>
             (
+                // Gets the patients from the patient service proxy
                 PatientServiceProxy
                 .Current
                 .Patients
@@ -67,6 +70,7 @@ public class AppointmentManagementViewModel: INotifyPropertyChanged
         {
             return;
         }
+        // Call the service proxy to delete the appointment
         AppointmentServiceProxy.Current.DeleteAppointment(SelectedAppointment.AppId);
         Refresh();
     }

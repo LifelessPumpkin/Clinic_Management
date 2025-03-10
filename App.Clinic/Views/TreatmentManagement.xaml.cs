@@ -23,7 +23,7 @@ public partial class TreatmentManagement : ContentPage , INotifyPropertyChanged
     private void AddClicked (object sender, EventArgs e)
     {
         // Go to treatment details page
-        // treatmentid = 0 because its a new patient, it will be updated in the page
+        // treatmentid = 0 because its a new patient
         Shell.Current.GoToAsync("//TreatmentDetails?treatmentId=0");
     }
 

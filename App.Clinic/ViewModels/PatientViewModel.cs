@@ -66,6 +66,7 @@ namespace App.Clinic.ViewModels
             {
                 var retval = new ObservableCollection<InsurancePlan>
                 (
+                    // Gets all available insurance plans from service proxy
                     PatientServiceProxy
                     .Current
                     .InsurancePlans
@@ -90,12 +91,14 @@ namespace App.Clinic.ViewModels
 
         public void SetUpCommands()
         {
+            // Commands to attach to the patients
             DeleteCommand = new Command(DoDelete);
             EditCommand = new Command((p)=> DoEdit(p as PatientViewModel));
         }
 
         private void DoDelete()
         {
+            // Call service proxy to delete the patient
             if(Id > 0) PatientServiceProxy.Current.DeletePatient(Id);
             Shell.Current.GoToAsync("//Patients");
         }
@@ -104,6 +107,7 @@ namespace App.Clinic.ViewModels
         {
             if(pvm == null) return;
             var selectedPatientId = pvm?.Id ?? 0;
+            // Go to the patient details page to edit
             Shell.Current.GoToAsync($"//PatientDetails?patientId={selectedPatientId}");
         }
 
@@ -111,11 +115,13 @@ namespace App.Clinic.ViewModels
         {
             if (model != null)
             {
+                // Call service proxy to add the patient
                 await PatientServiceProxy
                 .Current
                 .AddOrUpdatePatient(model);
             }
             
+            // Go back to management page
             await Shell.Current.GoToAsync("//Patients");
         }
     }

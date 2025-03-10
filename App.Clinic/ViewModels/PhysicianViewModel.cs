@@ -74,13 +74,17 @@ namespace App.Clinic.ViewModels
 
         public void SetUpCommands()
         {
+            // Commands to attach to physicians
             DeleteCommand = new Command(DoDelete);
             EditCommand = new Command((p)=> DoEdit(p as PhysicianViewModel));
         }
 
         private void DoDelete()
         {
+            // Call service proxy to delete physician
             if(EID > 0) PhysicianServiceProxy.Current.DeletePhysician(EID);
+            
+            // Go back to management page
             Shell.Current.GoToAsync("//Physicians");
         }
 
@@ -88,6 +92,7 @@ namespace App.Clinic.ViewModels
         {
             if(pvm == null) return;
             var selectedPhysicianEID = pvm?.EID ?? 0;
+            // Go to selected treatment page
             Shell.Current.GoToAsync($"//PhysicianDetails?physicianEID={selectedPhysicianEID}");
         }
 
@@ -95,10 +100,12 @@ namespace App.Clinic.ViewModels
         {
             if (model != null)
             {
+                // Call physician service proxy to add the physician
                 await PhysicianServiceProxy
                 .Current
                 .AddOrUpdatePhysician(model);
             }
+            // Go back to the management page
             await Shell.Current.GoToAsync("//Physicians");
         }
     }

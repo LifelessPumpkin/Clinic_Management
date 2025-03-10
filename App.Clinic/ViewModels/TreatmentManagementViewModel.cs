@@ -15,10 +15,12 @@ namespace App.Clinic.ViewModels
     {
         public TreatmentManagementViewModel()
         {
+            // Needs to be an observable collection
             Treatments = new ObservableCollection<TreatmentViewModel>();
         }
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        // Enables properties to be refreshed
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -30,6 +32,7 @@ namespace App.Clinic.ViewModels
         {
             get
             {
+                // Fetches treatments from treatment service proxy
                 var retval = new ObservableCollection<TreatmentViewModel>
                 (
                     TreatmentServiceProxy
@@ -43,29 +46,13 @@ namespace App.Clinic.ViewModels
             set { }
         }
 
-        //public Patient? SelectedPatient { get; set; }
-        //public ObservableCollection<Patient> Patients
-        //{
-        //    get
-        //    {
-        //        var retval = new ObservableCollection<Patient>
-        //        (
-        //            PatientServiceProxy
-        //            .Current
-        //            .Patients
-        //            .Where(p => p != null)
-        //        );
-        //        return retval;
-        //    }
-
-        //}
-
         public void Delete()
         {
             if (SelectedTreatment == null)
             {
                 return;
             }
+            // Call treatment service proxy to delete
             TreatmentServiceProxy.Current.DeleteTreatment(SelectedTreatment.Id);
             Refresh();
         }
