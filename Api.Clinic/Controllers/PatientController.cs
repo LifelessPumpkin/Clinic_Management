@@ -10,6 +10,7 @@ namespace Api.Clinic.Controllers
     public class PatientController : ControllerBase
     {
         private readonly ILogger<PatientController> _logger;
+        // Might be better to have PatientEC as a private readonly here instead of making a new EC everytime
 
         public PatientController(ILogger<PatientController> logger)
         {

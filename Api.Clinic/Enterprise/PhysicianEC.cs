@@ -12,6 +12,8 @@ namespace Api.Clinic.Enterprise
         {
             get => Filebase.Current.Physicians.Select(x => new PhysicianDTO(x));
         }
+
+        // This should work now just need to do some testing
         //public IEnumerable<PhysicianDTO>? Search(string query)
         //{
         //    return Filebase.Current.Physicians
@@ -19,19 +21,25 @@ namespace Api.Clinic.Enterprise
         //            .Contains(query?.ToUpper() ?? string.Empty))
         //        .Select(p => new PhysicianDTO(p));
         //}
+
         public PhysicianDTO? GetById(int id)
         {
+            // Find the correct physician
             var physician = Filebase.Current.Physicians.FirstOrDefault(p => p.EmployeeId == id);
             if (physician != null) return new PhysicianDTO(physician);
             return null;
         }
+
         public void Delete(int id)
         {
+            // Calls filebase to delete physician
             Filebase.Current.DeletePhysician(id);
         }
         public PhysicianDTO? AddOrUpdate(PhysicianDTO? physician)
         {
             if (physician == null) return null;
+            
+            // calls filebaes to create/update physician
             Filebase.Current.CreateOrUpdatePhysician(new Physician(physician));
             return physician;
         }

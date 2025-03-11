@@ -23,6 +23,7 @@ namespace Api.ToDoApplication.Persistence
         {
             get
             {
+                // Basic multithreading protection for singleton
                 lock (_lock)
                 {
                     if (_instance == null)
@@ -37,7 +38,7 @@ namespace Api.ToDoApplication.Persistence
 
         private Filebase()
         {
-            //_instance = null;
+            // All of this would need to be changed becase it only works on my specific machine back at tally
             _root = @"C:\Persistence";
             _patientRoot = $"{_root}\\Patients";
             _physicianRoot = $"{_root}\\Physicians";
@@ -47,6 +48,7 @@ namespace Api.ToDoApplication.Persistence
         {
             get
             {
+                // function to increment next key, effectively PRIMARY KEY in DB
                 if (Patients.Any()) return Patients.Select(x => x.Id).Max();
                 return 0;
             }
@@ -56,6 +58,7 @@ namespace Api.ToDoApplication.Persistence
         {
             get
             {
+                // function to increment next key, effectively PRIMARY KEY in DB
                 if (Physicians.Any()) return Physicians.Select(x => x.EmployeeId).Max();
                 return 0;
             }
@@ -115,8 +118,11 @@ namespace Api.ToDoApplication.Persistence
         {
             get
             {
+                // Getting the correct files
                 var root = new DirectoryInfo(_patientRoot);
                 var _patients = new List<Patient>();
+                
+                // Deserialize all the patients currently in memory
                 foreach(var patientFile in root.GetFiles())
                 {
                     var patient = JsonConvert.DeserializeObject<Patient>(File.ReadAllText(patientFile.FullName));
@@ -130,8 +136,11 @@ namespace Api.ToDoApplication.Persistence
         {
             get
             {
+                // Getting the correct files
                 var root = new DirectoryInfo(_physicianRoot);
                 var _physicians = new List<Physician>();
+
+                // Deserialize all the physicians in memory
                 foreach (var physfile in root.GetFiles())
                 {
                     var physician = JsonConvert.DeserializeObject<Physician>(File.ReadAllText(physfile.FullName));
